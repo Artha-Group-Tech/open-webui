@@ -30,6 +30,11 @@ if target_db_url:
     alembic_config.set_main_option('sqlalchemy.url', target_db_url.replace('%', '%%'))
 
 
+def _quote_identifier(identifier: str) -> str:
+    """Quote a PostgreSQL identifier for statements that cannot bind identifiers."""
+    return '"' + identifier.replace('"', '""') + '"'
+
+
 def run_migrations_offline() -> None:
     """Execute Alembic migrations in offline mode (outputs raw SQL DDL)."""
     db_connection_url = alembic_config.get_main_option('sqlalchemy.url')
@@ -86,7 +91,11 @@ def run_migrations_online() -> None:
                     f'DATABASE_SCHEMA "{DATABASE_SCHEMA}" does not exist. '
                     'Create it before running OpenWebUI migrations.'
                 )
-            live_connection.execute(text(f'SET search_path TO "{DATABASE_SCHEMA}"'))
+            live_connection.execute(text(f'SET search_path TO {_quote_identifier(DATABASE_SCHEMA)}'))
+            # SQLAlchemy 2.x starts a transaction for the schema preflight above.
+            # Commit it so Alembic owns the migration transaction and persists DDL.
+            live_connection.commit()
+            live_connection.dialect.default_schema_name = DATABASE_SCHEMA
         alembic.context.configure(
             connection=live_connection,
             target_metadata=migration_metadata,
