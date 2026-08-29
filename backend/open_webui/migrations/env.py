@@ -86,6 +86,7 @@ def run_migrations_online() -> None:
                     f'DATABASE_SCHEMA "{DATABASE_SCHEMA}" does not exist. '
                     'Create it before running OpenWebUI migrations.'
                 )
+            live_connection.execute(text(f'SET search_path TO "{DATABASE_SCHEMA}"'))
         alembic.context.configure(
             connection=live_connection,
             target_metadata=migration_metadata,
