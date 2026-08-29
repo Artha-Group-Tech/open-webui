@@ -77,8 +77,15 @@ def run_migrations_online() -> None:
         if DATABASE_SCHEMA:
             from sqlalchemy import text
 
-            live_connection.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{DATABASE_SCHEMA}"'))
-            live_connection.commit()
+            schema_exists = live_connection.execute(
+                text('SELECT 1 FROM information_schema.schemata WHERE schema_name = :schema_name'),
+                {'schema_name': DATABASE_SCHEMA},
+            ).scalar()
+            if not schema_exists:
+                raise RuntimeError(
+                    f'DATABASE_SCHEMA "{DATABASE_SCHEMA}" does not exist. '
+                    'Create it before running OpenWebUI migrations.'
+                )
         alembic.context.configure(
             connection=live_connection,
             target_metadata=migration_metadata,
