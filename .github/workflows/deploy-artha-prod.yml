@@ -33,9 +33,65 @@ env:
   OAUTH_CLIENT_ID: open-webui-production
 
 jobs:
+  validate-frontend:
+    name: Validate Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Install frontend dependencies
+        run: npm install --force
+
+      - name: Verify frontend formatting
+        run: npm run format
+
+      - name: Verify i18n strings
+        run: npm run i18n:parse
+
+      - name: Ensure generated files are committed
+        run: git diff --exit-code
+
+      - name: Run frontend tests
+        run: npm run test:frontend
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+
+  validate-backend:
+    name: Validate Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install backend formatter
+        run: pip install "ruff>=0.15.5"
+
+      - name: Verify backend formatting
+        run: ruff format --check . --exclude .venv --exclude venv
+
+      - name: Detect backend logic errors
+        run: ruff check --select=F --ignore=F401,F403,F405,F541,F811,F841 --output-format=github .
+
   build-and-deploy:
     name: Build → Push → Deploy (prod)
     runs-on: ubuntu-24.04-arm
+    needs: [validate-frontend, validate-backend]
     environment: production
     permissions:
       contents: read
