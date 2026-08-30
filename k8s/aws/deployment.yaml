@@ -36,8 +36,22 @@ spec:
               value: "${WEBUI_URL}"
             - name: ENABLE_OLLAMA_API
               value: "true"
+            - name: K8S_FLAG
+              value: "true"
+            - name: OLLAMA_BASE_URL
+              value: "http://ollama.${K8S_NAMESPACE}.svc.cluster.local:11434"
             - name: OLLAMA_BASE_URLS
               value: "http://ollama.${K8S_NAMESPACE}.svc.cluster.local:11434"
+            - name: RAG_OLLAMA_BASE_URL
+              value: "http://ollama.${K8S_NAMESPACE}.svc.cluster.local:11434"
+            - name: RAG_EMBEDDING_ENGINE
+              value: "ollama"
+            - name: RAG_EMBEDDING_MODEL
+              value: "nomic-embed-text"
+            - name: RAG_EMBEDDING_BATCH_SIZE
+              value: "1"
+            - name: OPEN_WEBUI_CONFIG_OVERRIDE_KEYS
+              value: "ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size"
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
