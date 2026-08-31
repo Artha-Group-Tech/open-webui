@@ -11,7 +11,6 @@ from typing import Any
 from open_webui.env import ENABLE_PLUGINS, VERSION
 from open_webui.models.config import Config
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-from open_webui.retrieval.web.utils import validate_url
 from open_webui.utils.webhook import post_webhook
 
 log = logging.getLogger(__name__)
@@ -882,6 +881,8 @@ async def upsert_event_webhook(webhook: dict[str, Any]) -> dict[str, Any]:
     webhooks = await get_event_webhooks()
     url = str(webhook.get('url') or '').strip()
     if url:
+        from open_webui.retrieval.web.utils import validate_url
+
         validate_url(url)
 
     normalized = normalize_event_webhook(webhook, create=True)
