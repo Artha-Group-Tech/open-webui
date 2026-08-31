@@ -2,6 +2,7 @@ import ast
 import asyncio
 import base64
 import copy
+import html
 import inspect
 import json
 import logging
@@ -523,6 +524,10 @@ def get_citation_source_from_tool_result(
                         'file_id': file_id,
                         'name': source_name,
                         'source': source_name,
+                        **({'filename': chunk.get('filename')} if chunk.get('filename') else {}),
+                        **({'relative_path': chunk.get('relative_path')} if chunk.get('relative_path') else {}),
+                        **({'file_type': chunk.get('file_type')} if chunk.get('file_type') else {}),
+                        **({'inferred_date': chunk.get('inferred_date')} if chunk.get('inferred_date') else {}),
                         **({'note_id': note_id} if note_id else {}),
                     }
                 )
@@ -946,6 +951,7 @@ def get_source_context(sources: list, source_ids: dict = None, include_content: 
     context_string = ''
     if source_ids is None:
         source_ids = {}
+    attr = lambda value: html.escape(str(value), quote=True)
     for source in sources:
         for doc, meta in zip(source.get('document', []), source.get('metadata', [])):
             source_id = meta.get('source') or source.get('source', {}).get('id') or 'N/A'
@@ -954,12 +960,18 @@ def get_source_context(sources: list, source_ids: dict = None, include_content: 
             src_name = source.get('source', {}).get('name')
             src_type = source.get('source', {}).get('type')
             src_rid = source.get('source', {}).get('id')
+            src_filename = meta.get('filename')
+            src_date = meta.get('inferred_date')
+            src_file_type = meta.get('file_type')
             body = doc if include_content else ''
             context_string += (
                 f'<source id="{source_ids[source_id]}"'
-                + (f' name="{src_name}"' if src_name else '')
-                + (f' resource-type="{src_type}"' if src_type else '')
-                + (f' resource-id="{src_rid}"' if src_rid else '')
+                + (f' name="{attr(src_name)}"' if src_name else '')
+                + (f' resource-type="{attr(src_type)}"' if src_type else '')
+                + (f' resource-id="{attr(src_rid)}"' if src_rid else '')
+                + (f' filename="{attr(src_filename)}"' if src_filename else '')
+                + (f' source-date="{attr(src_date)}"' if src_date else '')
+                + (f' file-type="{attr(src_file_type)}"' if src_file_type else '')
                 + f'>{body}</source>\n'
             )
     return context_string
@@ -5872,15 +5884,16 @@ async def streaming_chat_response_handler(response, ctx):
                             else:
                                 replace_system_message_content('', form_data['messages'])
 
-                            # Build context: file sources with content,
-                            # tool sources as citation markers only.
+                            # Build context with retrieved tool content as well.
+                            # Smaller local models drift if tool sources are
+                            # reintroduced as citation markers only.
                             source_ids = {}
                             source_context = get_source_context(
                                 metadata.get('sources', []), source_ids
                             ) + get_source_context(
                                 all_tool_call_sources,
                                 source_ids,
-                                include_content=False,
+                                include_content=True,
                             )
                             source_context = source_context.strip()
                             if source_context:

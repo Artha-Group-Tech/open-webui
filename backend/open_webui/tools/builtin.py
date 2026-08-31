@@ -3149,6 +3149,9 @@ async def query_knowledge_files(
     Search knowledge base files using semantic/vector search. Searches across collections (KBs),
     individual files, and notes that the user has access to.
     Helpful for internal documentation, uploaded knowledge, and attached model knowledge.
+    When the user asks for sources, filenames, dates, facts, or citations, use this tool
+    and answer from the returned JSON fields and retrieved content. For external knowledge,
+    prefer filename, inferred_date, file_type, and source content over opaque file IDs.
 
     :param query: The search query to find semantically relevant content
     :param knowledge_ids: Optional list of KB ids to limit search to specific knowledge bases
