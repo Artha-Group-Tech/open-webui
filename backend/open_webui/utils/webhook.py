@@ -7,7 +7,6 @@ from open_webui.env import (
     AIOHTTP_CLIENT_SESSION_SSL,
     VERSION,
 )
-from open_webui.retrieval.web.utils import get_ssrf_safe_session, validate_url
 from open_webui.utils.json_codec import JSONCodec
 
 log = logging.getLogger(__name__)
@@ -28,6 +27,8 @@ def _event_text(message: str, description: str | None = None, event_data: dict |
 
 
 async def post_webhook(name: str, url: str, message: str, event_data: dict, description: str | None = None) -> bool:
+    from open_webui.retrieval.web.utils import get_ssrf_safe_session, validate_url
+
     try:
         log.debug('post_webhook: %s, %s, %s', url, message, event_data)
         # Block private-IP / loopback / cloud-metadata targets — the URL is
