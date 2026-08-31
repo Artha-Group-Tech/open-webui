@@ -1,6 +1,5 @@
 from typing import Any
 
-from open_webui.config import DEFAULT_USER_PERMISSIONS
 from open_webui.models.access_grants import (
     has_anyone_read_access_grant,
     has_public_read_access_grant,
@@ -101,6 +100,8 @@ async def has_permission(
             return True
 
     # Check default permissions afterward if the group permissions don't allow it
+    from open_webui.config import DEFAULT_USER_PERMISSIONS
+
     default_permissions = fill_missing_permissions(default_permissions, DEFAULT_USER_PERMISSIONS)
     return get_permission(default_permissions, permission_hierarchy)
 
