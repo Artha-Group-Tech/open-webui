@@ -50,8 +50,10 @@ spec:
               value: "nomic-embed-text"
             - name: RAG_EMBEDDING_BATCH_SIZE
               value: "1"
+            - name: DEFAULT_MODEL_PARAMS
+              value: '{"think": false}'
             - name: OPEN_WEBUI_CONFIG_OVERRIDE_KEYS
-              value: "ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size"
+              value: "ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,models.default_params"
             - name: DISABLED_BUILTIN_TOOL_CATEGORIES
               value: "tasks,automations,calendar,notes"
             - name: DATABASE_URL
