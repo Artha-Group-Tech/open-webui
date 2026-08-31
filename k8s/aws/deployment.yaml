@@ -52,6 +52,8 @@ spec:
               value: "1"
             - name: OPEN_WEBUI_CONFIG_OVERRIDE_KEYS
               value: "ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size"
+            - name: DISABLED_BUILTIN_TOOL_CATEGORIES
+              value: "tasks,automations,calendar,notes"
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
