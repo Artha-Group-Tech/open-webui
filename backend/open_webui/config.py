@@ -42,16 +42,8 @@ async def seed_registered_defaults():
     await Config.rename_prefix('rag.web', 'web')
     await Config.repair_config_rows()
     await Config.seed_defaults(DEFAULT_CONFIG)
-    override_keys = [
-        key.strip()
-        for key in os.getenv('OPEN_WEBUI_CONFIG_OVERRIDE_KEYS', '').split(',')
-        if key.strip()
-    ]
-    override_updates = {
-        key: DEFAULT_CONFIG[key]
-        for key in override_keys
-        if key in DEFAULT_CONFIG
-    }
+    override_keys = [key.strip() for key in os.getenv('OPEN_WEBUI_CONFIG_OVERRIDE_KEYS', '').split(',') if key.strip()]
+    override_updates = {key: DEFAULT_CONFIG[key] for key in override_keys if key in DEFAULT_CONFIG}
     if override_updates:
         await Config.upsert(override_updates)
 
