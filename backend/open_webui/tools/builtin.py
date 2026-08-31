@@ -3336,7 +3336,7 @@ async def query_knowledge_files(
                     'type': 'external',
                     'knowledge_id': knowledge.id,
                 }
-                for metadata_key in ('filename', 'path', 'relative_path', 'file_type', 'inferred_date'):
+                for metadata_key in ('filename', 'relative_path', 'file_type', 'inferred_date'):
                     if metadata.get(metadata_key):
                         chunk_info[metadata_key] = metadata.get(metadata_key)
                 if idx < len(distances):
