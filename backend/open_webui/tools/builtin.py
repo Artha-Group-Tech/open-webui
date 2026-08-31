@@ -2090,7 +2090,9 @@ async def search_knowledge_bases(
 ) -> str:
     """
     Search the user's accessible knowledge bases by name and description to find
-    a relevant internal source.
+    a relevant internal source. This returns knowledge base metadata only; use
+    query_knowledge_files with the returned knowledge base id to retrieve actual
+    source content, filenames, and citations.
 
     :param query: The search query to find matching knowledge bases
     :param count: Maximum number of results to return (default: 5)
@@ -3326,11 +3328,17 @@ async def query_knowledge_files(
                 metadata = metadatas[idx] if idx < len(metadatas) else {}
                 chunk_info = {
                     'content': doc,
-                    'source': metadata.get('source', metadata.get('name', knowledge.name)),
+                    'source': metadata.get('filename')
+                    or metadata.get('source')
+                    or metadata.get('name')
+                    or knowledge.name,
                     'file_id': metadata.get('file_id', f'external-{knowledge.id}'),
                     'type': 'external',
                     'knowledge_id': knowledge.id,
                 }
+                for metadata_key in ('filename', 'path', 'relative_path', 'file_type', 'inferred_date'):
+                    if metadata.get(metadata_key):
+                        chunk_info[metadata_key] = metadata.get(metadata_key)
                 if idx < len(distances):
                     chunk_info['distance'] = distances[idx]
                 chunks.append(chunk_info)
