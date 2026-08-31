@@ -538,9 +538,7 @@ async def get_builtin_tools(
     # Helper to check if a builtin tool category is enabled via meta.builtinTools
     # Defaults to True if not specified (backward compatible)
     disabled_builtin_tools = {
-        item.strip()
-        for item in os.getenv('DISABLED_BUILTIN_TOOL_CATEGORIES', '').split(',')
-        if item.strip()
+        item.strip() for item in os.getenv('DISABLED_BUILTIN_TOOL_CATEGORIES', '').split(',') if item.strip()
     }
 
     def is_builtin_tool_enabled(category: str, default: bool = True) -> bool:
