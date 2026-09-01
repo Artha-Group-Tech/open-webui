@@ -50,10 +50,32 @@ spec:
               value: "nomic-embed-text"
             - name: RAG_EMBEDDING_BATCH_SIZE
               value: "1"
+            - name: RAG_TEMPLATE
+              value: |
+                ### Task:
+                Answer the user's query using only the provided source context.
+
+                ### Grounding Rules:
+                - Treat the source context as the authority for factual claims.
+                - If the answer is not present in the source context, say that the retrieved sources do not contain enough information.
+                - Do not use unrelated chat history, previous conversations, notes, automations, or general background knowledge to fill gaps.
+                - When filenames or dates are requested, use the filename and source-date attributes from the <source> tags when available.
+                - Include concise inline citations in [id] format for source-backed claims.
+                - Do not include XML tags in the response.
+
+                ### User Query:
+                {{QUERY}}
+
+                <context>
+                {{CONTEXT}}
+                </context>
+
+                ### Output:
+                Provide a direct, source-grounded answer. For source-heavy requests, prefer a compact table.
             - name: DEFAULT_MODEL_PARAMS
               value: '{"think": false}'
             - name: OPEN_WEBUI_CONFIG_OVERRIDE_KEYS
-              value: "ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,models.default_params"
+              value: "ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,rag.template,models.default_params"
             - name: DISABLED_BUILTIN_TOOL_CATEGORIES
               value: "tasks,automations,calendar,notes"
             - name: DATABASE_URL
