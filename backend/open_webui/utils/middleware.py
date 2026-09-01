@@ -6009,6 +6009,8 @@ async def streaming_chat_response_handler(response, ctx):
 
                                 if scoped_messages:
                                     new_form_data['messages'] = scoped_messages
+                                    new_form_data.pop('tools', None)
+                                    new_form_data['tool_choice'] = 'none'
 
                             if image_urls:
                                 new_form_data['messages'].append(
