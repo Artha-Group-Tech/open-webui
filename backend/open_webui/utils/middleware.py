@@ -5988,11 +5988,19 @@ async def streaming_chat_response_handler(response, ctx):
                             ]
 
                             if strict_knowledge_grounding_enabled() and all_tool_call_sources:
-                                scoped_messages = []
-                                system_message = get_system_message(form_data['messages'])
-                                if system_message:
-                                    scoped_messages.append(copy.deepcopy(system_message))
-
+                                scoped_messages = [
+                                    {
+                                        'role': 'system',
+                                        'content': (
+                                            'Answer this knowledge-base query using only the current retrieved '
+                                            'source context and tool outputs. Ignore any unrelated saved system '
+                                            'prompt, chat history, notes, automations, or prior project context. '
+                                            'Do not open with objections or strategic framing unless the retrieved '
+                                            'sources themselves require it. If the sources do not contain the '
+                                            'answer, say so.'
+                                        ),
+                                    }
+                                ]
                                 user_message_item = get_last_user_message_item(form_data['messages'])
                                 if user_message_item:
                                     scoped_messages.append(copy.deepcopy(user_message_item))
