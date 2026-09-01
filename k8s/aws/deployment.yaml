@@ -78,6 +78,8 @@ spec:
               value: "ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,rag.template,models.default_params"
             - name: DISABLED_BUILTIN_TOOL_CATEGORIES
               value: "tasks,automations,calendar,notes"
+            - name: STRICT_KNOWLEDGE_TOOL_GROUNDING
+              value: "true"
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:

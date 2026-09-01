@@ -146,6 +146,15 @@ logging.basicConfig(stream=sys.stdout, level=GLOBAL_LOG_LEVEL)
 log = logging.getLogger(__name__)
 
 
+def strict_knowledge_grounding_enabled() -> bool:
+    return os.getenv('STRICT_KNOWLEDGE_TOOL_GROUNDING', '').lower() in {
+        '1',
+        'true',
+        'yes',
+        'on',
+    }
+
+
 def _is_tool_result_error(value: Any) -> bool:
     if isinstance(value, str):
         text = value.strip().lower()
@@ -5977,6 +5986,21 @@ async def streaming_chat_response_handler(response, ctx):
                                 *form_data['messages'],
                                 *tool_messages,
                             ]
+
+                            if strict_knowledge_grounding_enabled() and all_tool_call_sources:
+                                scoped_messages = []
+                                system_message = get_system_message(form_data['messages'])
+                                if system_message:
+                                    scoped_messages.append(copy.deepcopy(system_message))
+
+                                user_message_item = get_last_user_message_item(form_data['messages'])
+                                if user_message_item:
+                                    scoped_messages.append(copy.deepcopy(user_message_item))
+
+                                scoped_messages.extend(tool_messages)
+
+                                if scoped_messages:
+                                    new_form_data['messages'] = scoped_messages
 
                             if image_urls:
                                 new_form_data['messages'].append(
