@@ -26,7 +26,7 @@ ARG GID=0
 ######## WebUI frontend ########
 FROM --platform=$BUILDPLATFORM node:22-alpine3.20 AS build
 ARG BUILD_HASH
-ARG FRONTEND_NODE_OPTIONS="--max-old-space-size=4096"
+ARG FRONTEND_NODE_OPTIONS="--max-old-space-size=8192"
 
 # Set Node.js options (heap limit Allocation failed - JavaScript heap out of memory)
 ENV NODE_OPTIONS=${FRONTEND_NODE_OPTIONS}
