@@ -39,11 +39,11 @@ spec:
             - name: K8S_FLAG
               value: "true"
             - name: OLLAMA_BASE_URL
-              value: "http://ollama.${K8S_NAMESPACE}.svc.cluster.local:11434"
+              value: "http://ollama.artha-models.svc.cluster.local:11434"
             - name: OLLAMA_BASE_URLS
-              value: "http://ollama.${K8S_NAMESPACE}.svc.cluster.local:11434"
+              value: "http://ollama.artha-models.svc.cluster.local:11434"
             - name: RAG_OLLAMA_BASE_URL
-              value: "http://ollama.${K8S_NAMESPACE}.svc.cluster.local:11434"
+              value: "http://ollama.artha-models.svc.cluster.local:11434"
             - name: RAG_EMBEDDING_ENGINE
               value: "ollama"
             - name: RAG_EMBEDDING_MODEL
