@@ -7,6 +7,7 @@ This deploys OpenWebUI to the existing `artha-ai` namespace and exposes it at
 
 - Namespace: `artha-ai`
 - Public host: `chewie.artha.vc`
+- Temporary legacy host: `chat.artha.vc`
 - Ollama URL: `http://ollama.artha-models.svc.cluster.local:11434`
 - PR Knowledge MCP URL: `http://pr-knowledge-mcp.artha-ai.svc.cluster.local:8010/mcp`
 - Qdrant URL: `http://qdrant-pr-knowledge.artha-ai.svc.cluster.local:6333`
