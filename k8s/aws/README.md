@@ -1,12 +1,12 @@
 # Artha OpenWebUI AWS Deployment
 
 This deploys OpenWebUI to the existing `artha-ai` namespace and exposes it at
-`https://chat.artha.vc`.
+`https://chewie.artha.vc`.
 
 ## Runtime
 
 - Namespace: `artha-ai`
-- Public host: `chat.artha.vc`
+- Public host: `chewie.artha.vc`
 - Ollama URL: `http://ollama.artha-models.svc.cluster.local:11434`
 - PR Knowledge MCP URL: `http://pr-knowledge-mcp.artha-ai.svc.cluster.local:8010/mcp`
 - Qdrant URL: `http://qdrant-pr-knowledge.artha-ai.svc.cluster.local:6333`
@@ -37,7 +37,7 @@ Create `open-webui-secrets` from `secret.example.yaml` with:
 The Keycloak redirect URI must be:
 
 ```text
-https://chat.artha.vc/oauth/oidc/callback
+https://chewie.artha.vc/oauth/oidc/callback
 ```
 
 ## Rollback
