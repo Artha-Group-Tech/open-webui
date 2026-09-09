@@ -75,7 +75,7 @@ spec:
             - name: DEFAULT_MODEL_PARAMS
               value: '{"think": false}'
             - name: OPEN_WEBUI_CONFIG_OVERRIDE_KEYS
-              value: "webui.url,ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,rag.template,models.default_params"
+              value: "webui.url,ui.enable_login_form,ui.enable_signup,oauth.auto_redirect,ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,rag.template,models.default_params"
             - name: DISABLED_BUILTIN_TOOL_CATEGORIES
               value: "tasks,automations,calendar,notes"
             - name: STRICT_KNOWLEDGE_TOOL_GROUNDING
@@ -90,6 +90,10 @@ spec:
                 secretKeyRef:
                   name: open-webui-secrets
                   key: DATABASE_SCHEMA
+            - name: ENABLE_LOGIN_FORM
+              value: "false"
+            - name: ENABLE_SIGNUP
+              value: "false"
             - name: ENABLE_OAUTH
               value: "true"
             - name: ENABLE_OAUTH_SIGNUP
@@ -97,7 +101,7 @@ spec:
             - name: OAUTH_MERGE_ACCOUNTS_BY_EMAIL
               value: "true"
             - name: OAUTH_AUTO_REDIRECT
-              value: "false"
+              value: "true"
             - name: OAUTH_PROVIDER_NAME
               value: "Artha"
             - name: OPENID_PROVIDER_URL
