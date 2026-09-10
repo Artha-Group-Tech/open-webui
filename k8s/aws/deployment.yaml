@@ -75,7 +75,7 @@ spec:
             - name: DEFAULT_MODEL_PARAMS
               value: '{"think": false}'
             - name: OPEN_WEBUI_CONFIG_OVERRIDE_KEYS
-              value: "webui.url,ui.enable_login_form,ui.enable_signup,oauth.auto_redirect,ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,rag.template,models.default_params"
+              value: "webui.url,ui.enable_login_form,ui.enable_signup,oauth.auto_redirect,oauth.enable_role_mapping,oauth.roles_claim,oauth.allowed_roles,oauth.admin_roles,ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,rag.template,models.default_params"
             - name: DISABLED_BUILTIN_TOOL_CATEGORIES
               value: "tasks,automations,calendar,notes"
             - name: STRICT_KNOWLEDGE_TOOL_GROUNDING
@@ -102,6 +102,14 @@ spec:
               value: "true"
             - name: OAUTH_AUTO_REDIRECT
               value: "true"
+            - name: ENABLE_OAUTH_ROLE_MANAGEMENT
+              value: "true"
+            - name: OAUTH_ROLES_CLAIM
+              value: "chewie_role"
+            - name: OAUTH_ALLOWED_ROLES
+              value: "chewie-user"
+            - name: OAUTH_ADMIN_ROLES
+              value: "chewie-admin"
             - name: OAUTH_PROVIDER_NAME
               value: "Artha"
             - name: OPENID_PROVIDER_URL

@@ -26,6 +26,7 @@
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
 	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
 	import { redirect } from '@sveltejs/kit';
+	import chewiePicture from '../../Chewie!.png';
 
 	const i18n = getContext('i18n');
 
@@ -271,6 +272,16 @@
 								}}
 							>
 								<div class="mb-1">
+									{#if !($config?.onboarding ?? false) && mode === 'signin'}
+										<div class="mb-5 flex justify-center">
+											<img
+												src={chewiePicture}
+												alt="Chewie"
+												class="h-28 w-28 rounded-full object-cover shadow-lg ring-1 ring-gray-200 dark:ring-gray-700"
+											/>
+										</div>
+									{/if}
+
 									<div class=" text-2xl font-normal">
 										{#if $config?.onboarding ?? false}
 											{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
