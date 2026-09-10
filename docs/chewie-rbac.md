@@ -57,8 +57,7 @@ In realm `artha`, use the existing identity provider `Artha Group` with alias
 After mapping, a user without `ai_research:view` should receive a token with:
 
 ```json
-{"chewie_role": "chewie-denied"}
+{ "chewie_role": "chewie-denied" }
 ```
 
 OpenWebUI should reject that user with `403`.
-
