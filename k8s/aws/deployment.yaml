@@ -30,6 +30,8 @@ spec:
               value: "prod"
             - name: PORT
               value: "8080"
+            - name: WEBUI_NAME
+              value: "Chewie"
             - name: WEBUI_URL
               value: "${WEBUI_URL}"
             - name: CORS_ALLOW_ORIGIN
