@@ -412,11 +412,22 @@
 					: {})
 			}
 		};
+		const authorizeAfterSave =
+			!edit && type === 'mcp' && oauthAuthTypes.includes(auth_type) && oauthClientInfo;
+		const savedServerId = id;
 
 		await onSubmit(connection);
 
 		loading = false;
 		show = false;
+
+		if (authorizeAfterSave) {
+			initiateOAuthRedirect({
+				id: `server:mcp:${savedServerId}`,
+				serverId: savedServerId,
+				authType: 'mcp'
+			});
+		}
 
 		// reset form
 		type = 'openapi';
