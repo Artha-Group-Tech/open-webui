@@ -24,6 +24,22 @@ data:
         litellm_params:
           model: bedrock/converse/global.anthropic.claude-sonnet-5-5
           aws_region_name: us-east-1
+      - model_name: bedrock-kimi-k3
+        litellm_params:
+          model: bedrock/converse/global.moonshotai.kimi-k3
+          aws_region_name: us-east-1
+      - model_name: bedrock-kimi-k2-5
+        litellm_params:
+          model: bedrock/converse/moonshotai.kimi-k2.5
+          aws_region_name: us-east-1
+      - model_name: bedrock-glm-5
+        litellm_params:
+          model: bedrock/converse/zai.glm-5
+          aws_region_name: us-east-1
+      - model_name: bedrock-gemma-3-27b
+        litellm_params:
+          model: bedrock/converse/google.gemma-3-27b-it
+          aws_region_name: us-east-1
       - model_name: bedrock-nova-pro
         litellm_params:
           model: bedrock/converse/us.amazon.nova-pro-v1:0
