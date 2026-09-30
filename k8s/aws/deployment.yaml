@@ -20,6 +20,10 @@ metadata:
 data:
   config.yaml: |
     model_list:
+      - model_name: bedrock-claude-sonnet-5-5
+        litellm_params:
+          model: bedrock/converse/global.anthropic.claude-sonnet-5-5
+          aws_region_name: us-east-1
       - model_name: bedrock-nova-pro
         litellm_params:
           model: bedrock/converse/us.amazon.nova-pro-v1:0
