@@ -225,7 +225,7 @@ spec:
                 ### Output:
                 Provide a direct, source-grounded answer. For source-heavy requests, prefer a compact table.
             - name: DEFAULT_MODEL_PARAMS
-              value: '{"think": false, "num_ctx": 8192, "num_predict": -1, "stream_response": true}'
+              value: '{}'
             - name: AIOHTTP_CLIENT_TIMEOUT
               value: "600"
             - name: OPEN_WEBUI_CONFIG_OVERRIDE_KEYS
