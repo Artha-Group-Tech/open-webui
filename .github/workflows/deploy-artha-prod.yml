@@ -29,6 +29,7 @@ env:
   APP_HOST: chewie.artha.vc
   WEBUI_URL: https://chewie.artha.vc
   ACM_CERT_ARN: arn:aws:acm:ap-south-1:762233754445:certificate/a191d801-908d-495c-bbb9-fadce239d6ab
+  MODEL_GATEWAY_IRSA_ROLE_ARN: arn:aws:iam::762233754445:role/artha-prod-aps1-model-gateway-ai-irsa-role
   OPENID_PROVIDER_URL: https://auth.artha.vc/auth/realms/artha/.well-known/openid-configuration
   OAUTH_CLIENT_ID: open-webui-production
 
@@ -137,11 +138,12 @@ jobs:
           WEBUI_SECRET_KEY: ${{ secrets.OPEN_WEBUI_WEBUI_SECRET_KEY }}
           OAUTH_CLIENT_SECRET: ${{ secrets.OPEN_WEBUI_OAUTH_CLIENT_SECRET }}
           DATABASE_URL: ${{ secrets.OPEN_WEBUI_DATABASE_URL }}
+          LITELLM_MASTER_KEY: ${{ secrets.OPEN_WEBUI_LITELLM_MASTER_KEY }}
           DATABASE_SCHEMA: open_webui
         run: |
           set -euo pipefail
           missing=()
-          for name in WEBUI_SECRET_KEY OAUTH_CLIENT_SECRET DATABASE_URL; do
+          for name in WEBUI_SECRET_KEY OAUTH_CLIENT_SECRET DATABASE_URL LITELLM_MASTER_KEY; do
             if [ -z "${!name:-}" ]; then
               missing+=("$name")
             fi
@@ -157,6 +159,7 @@ jobs:
             --from-literal=OAUTH_CLIENT_SECRET="$OAUTH_CLIENT_SECRET" \
             --from-literal=DATABASE_URL="$DATABASE_URL" \
             --from-literal=DATABASE_SCHEMA="$DATABASE_SCHEMA" \
+            --from-literal=LITELLM_MASTER_KEY="$LITELLM_MASTER_KEY" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Render and apply K8s manifests
@@ -166,10 +169,12 @@ jobs:
           set -euo pipefail
           envsubst < k8s/aws/deployment.yaml | kubectl apply -f -
           envsubst < k8s/aws/ingress.yaml | kubectl apply -f -
+          kubectl rollout status deployment/model-gateway -n "$K8S_NAMESPACE" --timeout=300s
           kubectl rollout status deployment/open-webui -n "$K8S_NAMESPACE" --timeout=300s
 
       - name: Deployment summary
         run: |
           echo "OpenWebUI deployed SHA ${{ github.sha }} to https://${APP_HOST}"
+          kubectl get pods -n "$K8S_NAMESPACE" -l app=model-gateway
           kubectl get pods -n "$K8S_NAMESPACE" -l app=open-webui
           kubectl get ingress -n "$K8S_NAMESPACE" open-webui

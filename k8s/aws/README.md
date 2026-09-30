@@ -34,6 +34,14 @@ Create `open-webui-secrets` from `secret.example.yaml` with:
 - `OAUTH_CLIENT_SECRET`
 - `DATABASE_URL`
 - `DATABASE_SCHEMA`
+- `LITELLM_MASTER_KEY`
+
+The deployment workflow populates `LITELLM_MASTER_KEY` from the GitHub environment
+secret `OPEN_WEBUI_LITELLM_MASTER_KEY`.
+
+The `model-gateway` ServiceAccount is annotated with the Terraform-managed
+Bedrock IRSA role from the `model_gateway_ai_irsa_role_arn` output in
+`artha-infra`.
 
 The Keycloak redirect URI must be:
 

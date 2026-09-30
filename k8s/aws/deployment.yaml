@@ -1,3 +1,122 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: model-gateway
+  namespace: ${K8S_NAMESPACE}
+  labels:
+    app: model-gateway
+    environment: ${APP_ENVIRONMENT}
+  annotations:
+    eks.amazonaws.com/role-arn: ${MODEL_GATEWAY_IRSA_ROLE_ARN}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: model-gateway-config
+  namespace: ${K8S_NAMESPACE}
+  labels:
+    app: model-gateway
+    environment: ${APP_ENVIRONMENT}
+data:
+  config.yaml: |
+    model_list:
+      - model_name: bedrock-nova-pro
+        litellm_params:
+          model: bedrock/converse/us.amazon.nova-pro-v1:0
+          aws_region_name: us-east-1
+      - model_name: bedrock-nova-lite
+        litellm_params:
+          model: bedrock/converse/us.amazon.nova-lite-v1:0
+          aws_region_name: us-east-1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-gateway
+  namespace: ${K8S_NAMESPACE}
+  labels:
+    app: model-gateway
+    environment: ${APP_ENVIRONMENT}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: model-gateway
+  template:
+    metadata:
+      labels:
+        app: model-gateway
+        environment: ${APP_ENVIRONMENT}
+    spec:
+      serviceAccountName: model-gateway
+      enableServiceLinks: false
+      containers:
+        - name: litellm
+          image: ghcr.io/berriai/litellm:main-latest
+          args:
+            - "--config"
+            - "/app/config.yaml"
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "4000"
+          ports:
+            - containerPort: 4000
+          env:
+            - name: AWS_REGION_NAME
+              value: "us-east-1"
+            - name: LITELLM_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: open-webui-secrets
+                  key: LITELLM_MASTER_KEY
+          volumeMounts:
+            - name: model-gateway-config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /health/liveliness
+              port: 4000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 4000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: model-gateway-config
+          configMap:
+            name: model-gateway-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-gateway
+  namespace: ${K8S_NAMESPACE}
+  labels:
+    app: model-gateway
+    environment: ${APP_ENVIRONMENT}
+spec:
+  selector:
+    app: model-gateway
+  ports:
+    - name: http
+      port: 4000
+      targetPort: 4000
+  type: ClusterIP
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,6 +157,17 @@ spec:
               value: "${WEBUI_URL}"
             - name: ENABLE_OLLAMA_API
               value: "true"
+            - name: ENABLE_OPENAI_API
+              value: "true"
+            - name: OPENAI_API_BASE_URLS
+              value: "http://model-gateway.${K8S_NAMESPACE}.svc.cluster.local:4000/v1"
+            - name: OPENAI_API_CONFIGS
+              value: '{"0":{"enable":true,"provider":"litellm","prefix_id":"bedrock"}}'
+            - name: OPENAI_API_KEYS
+              valueFrom:
+                secretKeyRef:
+                  name: open-webui-secrets
+                  key: LITELLM_MASTER_KEY
             - name: K8S_FLAG
               value: "true"
             - name: OLLAMA_BASE_URL
@@ -79,7 +209,7 @@ spec:
             - name: AIOHTTP_CLIENT_TIMEOUT
               value: "600"
             - name: OPEN_WEBUI_CONFIG_OVERRIDE_KEYS
-              value: "webui.url,ui.enable_login_form,ui.enable_signup,ui.default_user_role,oauth.auto_redirect,oauth.enable_role_mapping,oauth.roles_claim,oauth.allowed_roles,oauth.admin_roles,ollama.enable,ollama.base_urls,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,rag.template,models.default_params"
+              value: "webui.url,ui.enable_login_form,ui.enable_signup,ui.default_user_role,oauth.auto_redirect,oauth.enable_role_mapping,oauth.roles_claim,oauth.allowed_roles,oauth.admin_roles,ollama.enable,ollama.base_urls,openai.enable,openai.api_base_urls,openai.api_keys,openai.api_configs,rag.ollama.base_url,rag.embedding_engine,rag.embedding_model,rag.embedding_batch_size,rag.template,models.default_params"
             - name: DISABLED_BUILTIN_TOOL_CATEGORIES
               value: "tasks,automations,calendar,notes"
             - name: STRICT_KNOWLEDGE_TOOL_GROUNDING
