@@ -1193,6 +1193,8 @@ async def chat_completion(
         if model_info_params.get('stream_response') is not None:
             form_data['stream'] = model_info_params.get('stream_response')
 
+        default_function_calling = 'legacy' if str(form_data.get('model', '')).startswith('bedrock.') else 'native'
+
         # Providers only report token counts when asked, so ask on every caller's behalf.
         if form_data.get('stream') and model_capabilities.get('usage'):
             form_data['stream_options'] = {**(form_data.get('stream_options') or {}), 'include_usage': True}
@@ -1290,7 +1292,7 @@ async def chat_completion(
                 'function_calling': (
                     form_data.get('params', {}).get('function_calling')
                     or model_info_params.get('function_calling')
-                    or 'native'
+                    or default_function_calling
                 ),
                 'tool_approval_mode': tool_approval_mode,
             },
