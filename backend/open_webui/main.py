@@ -1196,9 +1196,7 @@ async def chat_completion(
         # Bedrock Converse rejects toolConfig for models without tool support (e.g. Gemma 3),
         # so only those fall back to prompt-based tool selection.
         model_id = str(form_data.get('model', ''))
-        default_function_calling = (
-            'legacy' if model_id.startswith('bedrock.') and 'gemma' in model_id else 'native'
-        )
+        default_function_calling = 'legacy' if model_id.startswith('bedrock.') and 'gemma' in model_id else 'native'
 
         # Providers only report token counts when asked, so ask on every caller's behalf.
         if form_data.get('stream') and model_capabilities.get('usage'):
