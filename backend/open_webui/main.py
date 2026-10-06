@@ -1193,7 +1193,12 @@ async def chat_completion(
         if model_info_params.get('stream_response') is not None:
             form_data['stream'] = model_info_params.get('stream_response')
 
-        default_function_calling = 'legacy' if str(form_data.get('model', '')).startswith('bedrock.') else 'native'
+        # Bedrock Converse rejects toolConfig for models without tool support (e.g. Gemma 3),
+        # so only those fall back to prompt-based tool selection.
+        model_id = str(form_data.get('model', ''))
+        default_function_calling = (
+            'legacy' if model_id.startswith('bedrock.') and 'gemma' in model_id else 'native'
+        )
 
         # Providers only report token counts when asked, so ask on every caller's behalf.
         if form_data.get('stream') and model_capabilities.get('usage'):
